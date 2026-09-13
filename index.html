@@ -220,6 +220,31 @@
     font-style:italic;
   }
 
+  .plan-block{
+    margin-top:16px;
+    border-top:1px solid var(--line);
+    padding-top:14px;
+  }
+  .plan-block h3{
+    font-size:14px;
+    margin:0 0 8px;
+    color:var(--muted);
+    font-weight:700;
+  }
+  .plan-block img{
+    width:100%;
+    height:auto;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:#fff;
+    display:block;
+  }
+  .plan-caption{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:6px;
+  }
+
   footer{
     margin-top:32px;
     font-size:12px;
@@ -259,6 +284,11 @@
       <div class="floor-block" id="extraBlock">
         <h3>Altri ambienti sullo stesso piano</h3>
         <ul id="extraList"></ul>
+      </div>
+      <div class="plan-block" id="planBlock">
+        <h3>Porzione di piantina</h3>
+        <img id="planImg" src="" alt="Porzione di piantina">
+        <p class="plan-caption">Estratto dalla piantina generale dell'istituto — utile per orientarsi, non in scala precisa.</p>
       </div>
     </div>
   </div>
@@ -307,6 +337,19 @@ const PIANI_INFO = {
 };
 const PIANO_LABEL = {1:"Piano Primo", 2:"Piano Secondo", 3:"Piano Terzo"};
 
+// Mappa piano-ala -> file immagine (ritagli dalla piantina generale).
+// Al Piano Primo esiste solo Ala Nord; al Piano Terzo non esiste Ala Nord.
+const PIANTINE = {
+  "1-NORD":  "piantine/1-NORD.png",
+  "2-NORD":  "piantine/2-NORD.png",
+  "2-MEZZO": "piantine/2-MEZZO.png",
+  "2-SUD":   "piantine/2-SUD.png",
+  "2-OVEST": "piantine/2-OVEST.png",
+  "3-MEZZO": "piantine/3-MEZZO.png",
+  "3-SUD":   "piantine/3-SUD.png",
+  "3-OVEST": "piantine/3-OVEST.png"
+};
+
 const q = document.getElementById('q');
 const clearBtn = document.getElementById('clearBtn');
 const result = document.getElementById('result');
@@ -347,6 +390,17 @@ function render(classe){
   } else {
     block.style.display = 'none';
   }
+
+  const planKey = data.piano + '-' + data.ala;
+  const planBlock = document.getElementById('planBlock');
+  const planImg = document.getElementById('planImg');
+  if(PIANTINE[planKey]){
+    planImg.src = PIANTINE[planKey];
+    planBlock.style.display = 'block';
+  } else {
+    planBlock.style.display = 'none';
+  }
+
   result.classList.add('show');
 }
 
