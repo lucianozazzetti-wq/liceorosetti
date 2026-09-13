@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dove si trova la classe</title>
+<meta name="theme-color" content="#1B1B1B">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dove è la classe">
+<style>
+  :root{
+    --ink:#1B1B1B;
+    --paper:#F7F7F5;
+    --paper-dim:#EDEDE9;
+    --line:#D8D6D0;
+    --nord:#2B5D8C;
+    --sud:#C1622A;
+    --ovest:#3F7A52;
+    --mezzo:#6B4E82;
+    --muted:#6B6B65;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 20px 60px;
+  }
+  .wrap{width:100%;max-width:420px;}
+
+  header{margin-bottom:22px;}
+  .eyebrow{
+    font-size:13px;
+    color:var(--muted);
+    margin:0 0 4px;
+  }
+  h1{
+    font-size:22px;
+    line-height:1.25;
+    margin:0;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+
+  .search-box{
+    display:flex;
+    align-items:center;
+    background:#fff;
+    border:1.5px solid var(--ink);
+    border-radius:14px;
+    padding:4px 6px 4px 18px;
+    margin-bottom:18px;
+  }
+  .search-box input{
+    flex:1;
+    border:none;
+    outline:none;
+    background:transparent;
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:0.03em;
+    padding:14px 0;
+    color:var(--ink);
+    text-transform:uppercase;
+    width:100%;
+    min-width:0;
+  }
+  .search-box input::placeholder{
+    color:#B9B7B0;
+    font-weight:600;
+    letter-spacing:0.02em;
+  }
+  .clear-btn{
+    background:var(--paper-dim);
+    border:none;
+    border-radius:10px;
+    width:36px;
+    height:36px;
+    flex:none;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    color:var(--muted);
+    cursor:pointer;
+  }
+  .clear-btn.show{display:flex;}
+
+  .suggestions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:-8px 0 18px;
+  }
+  .chip{
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:999px;
+    padding:7px 14px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .chip:active{background:var(--paper-dim);}
+
+  .result{
+    display:none;
+    border-radius:18px;
+    overflow:hidden;
+    border:1.5px solid var(--ink);
+    margin-bottom:16px;
+  }
+  .result.show{display:block;}
+  .result-top{
+    background:var(--ink);
+    color:var(--paper);
+    padding:22px 22px 20px;
+    display:flex;
+    align-items:baseline;
+    gap:16px;
+  }
+  .result-classe{
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:0.02em;
+  }
+  .result-floor-num{
+    font-size:56px;
+    font-weight:800;
+    line-height:0.9;
+    margin-left:auto;
+  }
+  .result-floor-label{
+    font-size:13px;
+    color:#C9C9C3;
+  }
+  .result-bottom{
+    padding:16px 22px 20px;
+    background:#fff;
+  }
+  .ala-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    font-size:15px;
+    padding:8px 14px;
+    border-radius:999px;
+    color:#fff;
+  }
+  .ala-pill .dot{
+    width:9px;height:9px;border-radius:50%;background:#fff;opacity:0.85;
+  }
+  .ala-NORD{background:var(--nord);}
+  .ala-SUD{background:var(--sud);}
+  .ala-OVEST{background:var(--ovest);}
+  .ala-MEZZO{background:var(--mezzo);}
+
+  .not-found{
+    display:none;
+    padding:18px 20px;
+    border-radius:14px;
+    background:var(--paper-dim);
+    color:var(--muted);
+    font-size:15px;
+    margin-bottom:16px;
+  }
+  .not-found.show{display:block;}
+
+  details{
+    border-top:1px solid var(--line);
+    padding-top:14px;
+    margin-top:8px;
+  }
+  summary{
+    cursor:pointer;
+    font-weight:700;
+    font-size:15px;
+    list-style:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  summary::-webkit-details-marker{display:none;}
+  summary::after{
+    content:"+";
+    font-size:20px;
+    font-weight:400;
+    color:var(--muted);
+  }
+  details[open] summary::after{content:"–";}
+
+  .floor-block{
+    margin-top:16px;
+  }
+  .floor-block h3{
+    font-size:14px;
+    margin:0 0 6px;
+    color:var(--muted);
+    font-weight:700;
+  }
+  .floor-block ul{
+    margin:0 0 4px;
+    padding:0 0 0 18px;
+    font-size:15px;
+    line-height:1.6;
+  }
+  .floor-block .no-extra{
+    font-size:14px;
+    color:var(--muted);
+    font-style:italic;
+  }
+
+  footer{
+    margin-top:32px;
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Liceo Rosetti — San Benedetto del Tronto</p>
+    <h1>In che aula si trova la classe?</h1>
+  </header>
+
+  <div class="search-box">
+    <input id="q" type="text" inputmode="text" autocomplete="off" autocapitalize="characters"
+           placeholder="Es. 3B" aria-label="Cerca classe">
+    <button class="clear-btn" id="clearBtn" aria-label="Cancella">✕</button>
+  </div>
+
+  <div class="suggestions" id="suggestions"></div>
+
+  <div class="result" id="result">
+    <div class="result-top">
+      <div>
+        <div class="result-classe" id="resClasse">3B</div>
+      </div>
+      <div style="margin-left:auto; text-align:right;">
+        <div class="result-floor-num" id="resPiano">3</div>
+        <div class="result-floor-label" id="resPianoLabel">Piano Terzo</div>
+      </div>
+    </div>
+    <div class="result-bottom">
+      <span class="ala-pill" id="resAla"><span class="dot"></span><span id="resAlaText">OVEST</span></span>
+      <div class="floor-block" id="extraBlock">
+        <h3>Altri ambienti sullo stesso piano</h3>
+        <ul id="extraList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="not-found" id="notFound">Nessuna classe trovata con questo nome. Controlla la sigla (es. 1A, 4S, 2M).</div>
+
+  <details>
+    <summary>Laboratori e uffici, piano per piano</summary>
+    <div id="allFloors"></div>
+  </details>
+
+  <footer>Dati aggiornati sulla piantina 2026/27. Per correzioni, contattare chi gestisce l'app.</footer>
+</div>
+
+<script>
+// ---------------------------------------------------------------
+// DATI CLASSI — modifica qui in caso di cambi di aula.
+// piano: 1, 2 o 3 (Primo / Secondo / Terzo). ala: NORD | SUD | OVEST | MEZZO
+// ---------------------------------------------------------------
+const CLASSI = {
+  "1A": {piano:2, ala:"MEZZO"}, "1B": {piano:1, ala:"NORD"}, "1C": {piano:3, ala:"OVEST"},
+  "1D": {piano:2, ala:"NORD"}, "1E": {piano:2, ala:"OVEST"}, "1F": {piano:3, ala:"MEZZO"},
+  "1M": {piano:3, ala:"SUD"},  "1S": {piano:2, ala:"SUD"},
+  "2A": {piano:2, ala:"OVEST"},"2B": {piano:3, ala:"OVEST"},"2C": {piano:1, ala:"NORD"},
+  "2D": {piano:1, ala:"NORD"}, "2E": {piano:1, ala:"NORD"}, "2F": {piano:3, ala:"MEZZO"},
+  "2M": {piano:2, ala:"NORD"}, "2S": {piano:3, ala:"SUD"},
+  "3A": {piano:2, ala:"NORD"}, "3B": {piano:3, ala:"OVEST"},"3C": {piano:2, ala:"SUD"},
+  "3D": {piano:3, ala:"MEZZO"},"3E": {piano:2, ala:"OVEST"},"3F": {piano:3, ala:"OVEST"},
+  "3M": {piano:2, ala:"MEZZO"},"3S": {piano:1, ala:"NORD"},
+  "4A": {piano:3, ala:"SUD"},  "4B": {piano:3, ala:"OVEST"},"4C": {piano:2, ala:"NORD"},
+  "4D": {piano:2, ala:"OVEST"},"4E": {piano:1, ala:"NORD"}, "4F": {piano:3, ala:"MEZZO"},
+  "4G": {piano:3, ala:"SUD"},  "4H": {piano:3, ala:"SUD"},  "4M": {piano:2, ala:"OVEST"},
+  "4S": {piano:2, ala:"SUD"},
+  "5A": {piano:3, ala:"OVEST"},"5B": {piano:2, ala:"MEZZO"},"5C": {piano:3, ala:"MEZZO"},
+  "5D": {piano:3, ala:"SUD"},  "5E": {piano:2, ala:"SUD"},  "5G": {piano:2, ala:"NORD"},
+  "5M": {piano:2, ala:"MEZZO"},"5S": {piano:1, ala:"NORD"}
+};
+
+// Ambienti non-aula per piano, dalla piantina generale (non legati a una singola ala,
+// perché la piantina non lo specifica con precisione riga per riga).
+const PIANI_INFO = {
+  0: {label:"Piano Terra", ambienti:["Aula Scienze","Archivio tecnico","Laboratorio Informatica 2"]},
+  1: {label:"Piano Primo", ambienti:["Aula Docenti","Aula Lettura","Uffici di segreteria","Vicepresidenza","Presidenza","Laboratorio Innovativo","Laboratorio Chimica","Ingresso principale (Viale De Gasperi)"]},
+  2: {label:"Piano Secondo", ambienti:["Laboratorio Informatica 1","Laboratorio Fisica","CIC"]},
+  3: {label:"Piano Terzo", ambienti:[]}
+};
+const PIANO_LABEL = {1:"Piano Primo", 2:"Piano Secondo", 3:"Piano Terzo"};
+
+const q = document.getElementById('q');
+const clearBtn = document.getElementById('clearBtn');
+const result = document.getElementById('result');
+const notFound = document.getElementById('notFound');
+const suggestions = document.getElementById('suggestions');
+
+function normalize(s){
+  return s.trim().toUpperCase().replace(/\s+/g,'');
+}
+
+function render(classe){
+  const c = normalize(classe);
+  if(!c){
+    result.classList.remove('show');
+    notFound.classList.remove('show');
+    return;
+  }
+  const data = CLASSI[c];
+  if(!data){
+    result.classList.remove('show');
+    notFound.classList.add('show');
+    return;
+  }
+  notFound.classList.remove('show');
+  document.getElementById('resClasse').textContent = c;
+  document.getElementById('resPiano').textContent = data.piano;
+  document.getElementById('resPianoLabel').textContent = PIANO_LABEL[data.piano];
+  const pill = document.getElementById('resAla');
+  pill.className = 'ala-pill ala-' + data.ala;
+  document.getElementById('resAlaText').textContent = 'Ala ' + data.ala.charAt(0) + data.ala.slice(1).toLowerCase();
+
+  const extra = PIANI_INFO[data.piano]?.ambienti || [];
+  const list = document.getElementById('extraList');
+  const block = document.getElementById('extraBlock');
+  if(extra.length){
+    list.innerHTML = extra.map(a => `<li>${a}</li>`).join('');
+    block.style.display = 'block';
+  } else {
+    block.style.display = 'none';
+  }
+  result.classList.add('show');
+}
+
+q.addEventListener('input', () => {
+  clearBtn.classList.toggle('show', q.value.length > 0);
+  render(q.value);
+  updateSuggestions(q.value);
+});
+
+clearBtn.addEventListener('click', () => {
+  q.value = '';
+  clearBtn.classList.remove('show');
+  render('');
+  updateSuggestions('');
+  q.focus();
+});
+
+function updateSuggestions(partial){
+  const p = normalize(partial);
+  suggestions.innerHTML = '';
+  if(!p) return;
+  const matches = Object.keys(CLASSI)
+    .filter(c => c.startsWith(p) && c !== p)
+    .sort()
+    .slice(0, 6);
+  matches.forEach(c => {
+    const chip = document.createElement('button');
+    chip.className = 'chip';
+    chip.textContent = c;
+    chip.addEventListener('click', () => {
+      q.value = c;
+      clearBtn.classList.add('show');
+      render(c);
+      suggestions.innerHTML = '';
+    });
+    suggestions.appendChild(chip);
+  });
+}
+
+// Sezione "tutti i piani"
+const allFloors = document.getElementById('allFloors');
+[0,1,2,3].forEach(p => {
+  const info = PIANI_INFO[p];
+  const div = document.createElement('div');
+  div.className = 'floor-block';
+  const ambientiHtml = info.ambienti.length
+    ? `<ul>${info.ambienti.map(a=>`<li>${a}</li>`).join('')}</ul>`
+    : `<p class="no-extra">Nessun laboratorio o ufficio segnalato, solo aule.</p>`;
+  div.innerHTML = `<h3>${info.label}</h3>${ambientiHtml}`;
+  allFloors.appendChild(div);
+});
+
+q.focus();
+</script>
+</body>
+</html>
